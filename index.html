@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Famiglia Tharoul '26 — Aanwezigheid</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root {
     --green-deep: #1a3a2a;
@@ -350,15 +350,21 @@ function initSupabase() {
   return true;
 }
 
-const grid = document.getElementById('days-grid');
-DAYS.forEach((d, i) => {
-  const chip = document.createElement('div');
-  chip.className = 'day-chip' + (d.friday ? ' friday' : '');
-  chip.dataset.index = i;
-  chip.innerHTML = `<span class="day-name">${d.label}</span><span class="day-date">${d.date}</span>${d.friday ? '<span class="day-note">vrijdag</span>' : ''}`;
-  chip.onclick = () => { chip.classList.toggle('selected'); updateFridayCards(); };
-  grid.appendChild(chip);
-});
+// Bouw de dagenrij direct op — onafhankelijk van Supabase
+function buildDaysGrid() {
+  const grid = document.getElementById('days-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  DAYS.forEach((d, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (d.friday ? ' friday' : '');
+    chip.dataset.index = i;
+    chip.innerHTML = `<span class="day-name">${d.label}</span><span class="day-date">${d.date}</span>${d.friday ? '<span class="day-note">vrijdag</span>' : ''}`;
+    chip.onclick = () => { chip.classList.toggle('selected'); updateFridayCards(); };
+    grid.appendChild(chip);
+  });
+}
+document.addEventListener('DOMContentLoaded', buildDaysGrid);
 
 function updateFridayCards() {
   const sel = [...document.querySelectorAll('.day-chip.selected')].map(c => +c.dataset.index);
@@ -550,7 +556,7 @@ function drow(key, val) {
   return `<div class="detail-row"><span class="detail-key">${key}</span><span class="detail-val">${val}</span></div>`;
 }
 
-initSupabase();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="initSupabase()" onerror="console.warn('Supabase kon niet laden')"></script>
 </body>
 </html>
