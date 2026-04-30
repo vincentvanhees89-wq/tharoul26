@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Famiglia Tharoul '26 — Aanwezigheid</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --green-deep: #1a3a2a;
+    --green-mid: #2d5a3d;
+    --green-soft: #4a8c5c;
+    --green-light: #a8d5b5;
+    --green-pale: #e8f5ec;
+    --cream: #faf7f2;
+    --warm-white: #ffffff;
+    --text-dark: #1a2420;
+    --text-mid: #3d5045;
+    --text-soft: #6b8070;
+    --gold: #c9a84c;
+    --gold-light: #f0dfa0;
+    --amber-pale: #fdf6e3;
+    --amber-light: #f0d89a;
+    --amber-dark: #7a5000;
+    --border: rgba(42, 90, 61, 0.15);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text-dark); min-height: 100vh; }
+
+  .hero { background: var(--green-deep); padding: 0; text-align: center; position: relative; overflow: hidden; }
+  .hero-img { width: 100%; height: 320px; object-fit: cover; object-position: center 60%; display: block; filter: brightness(0.72) saturate(0.9); }
+  .hero-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 32px 24px 40px; background: linear-gradient(to top, rgba(10,30,18,0.92) 0%, rgba(10,30,18,0.5) 60%, transparent 100%); }
+  .hero-tag { font-size: 11px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: var(--green-light); margin-bottom: 10px; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 52px); font-weight: 600; color: var(--warm-white); line-height: 1.1; margin-bottom: 8px; text-shadow: 0 2px 12px rgba(0,0,0,0.4); }
+  .hero-sub { font-size: 15px; color: var(--green-light); font-weight: 300; }
+  .hero-dates { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: rgba(255,255,255,0.1); border: 1px solid rgba(168,213,181,0.35); border-radius: 100px; padding: 7px 20px; font-size: 14px; color: var(--gold-light); }
+
+  .tabs { display: flex; justify-content: center; background: var(--green-mid); padding: 0 24px; }
+  .tab { padding: 13px 26px; font-size: 14px; font-weight: 500; color: var(--green-light); cursor: pointer; border: none; background: none; border-bottom: 3px solid transparent; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+  .tab.active { color: var(--warm-white); border-bottom-color: var(--gold); }
+  .tab:hover:not(.active) { color: var(--warm-white); }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 36px 24px 80px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--warm-white); border-radius: var(--radius); border: 1px solid var(--border); padding: 28px; margin-bottom: 16px; }
+  .card-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--green-deep); margin-bottom: 4px; }
+  .card-sub { font-size: 13px; color: var(--text-soft); margin-bottom: 24px; line-height: 1.55; }
+  .card.friday-card { background: var(--amber-pale); border-color: var(--amber-light); }
+  .card.friday-card .card-title { color: var(--amber-dark); }
+  .card.friday-card .card-sub { color: #9a7030; }
+
+  label.field-label { display: block; font-size: 13px; font-weight: 500; color: var(--text-mid); margin-bottom: 7px; }
+  input[type="text"], textarea {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text-dark); background: var(--cream);
+    outline: none; transition: border-color 0.2s; margin-bottom: 20px;
+  }
+  textarea { resize: vertical; min-height: 78px; line-height: 1.5; }
+  input[type="text"]:focus, textarea:focus { border-color: var(--green-soft); background: var(--warm-white); }
+  input[type="text"]::placeholder, textarea::placeholder { color: var(--text-soft); }
+
+  .members-section { margin-bottom: 22px; }
+  .member-row { display: flex; gap: 8px; align-items: center; margin-bottom: 7px; }
+  .member-row input { margin-bottom: 0; flex: 1; }
+  .btn-remove { width: 34px; height: 34px; border: 1.5px solid var(--border); border-radius: 8px; background: none; cursor: pointer; color: var(--text-soft); font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .btn-remove:hover { border-color: #e25; color: #e25; background: #fff0f0; }
+  .btn-add-member { font-size: 13px; color: var(--green-soft); background: none; border: 1.5px dashed var(--green-light); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: all 0.15s; width: 100%; margin-bottom: 20px; }
+  .btn-add-member:hover { background: var(--green-pale); border-style: solid; }
+
+  .stepper-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .stepper-btn { width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--cream); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; color: var(--text-mid); transition: all 0.15s; flex-shrink: 0; line-height: 1; }
+  .stepper-btn:hover { border-color: var(--green-soft); background: var(--green-pale); color: var(--green-deep); }
+  .stepper-value { font-size: 24px; font-weight: 500; color: var(--green-deep); min-width: 32px; text-align: center; }
+  .stepper-label { font-size: 13px; color: var(--text-soft); line-height: 1.4; }
+
+  .days-label { font-size: 13px; font-weight: 500; color: var(--text-mid); margin-bottom: 10px; }
+  .days-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(82px, 1fr)); gap: 7px; margin-bottom: 4px; }
+  .day-chip { border: 1.5px solid var(--border); border-radius: 10px; padding: 9px 6px; text-align: center; cursor: pointer; transition: all 0.15s; background: var(--cream); user-select: none; }
+  .day-chip:hover { border-color: var(--green-soft); background: var(--green-pale); }
+  .day-chip.selected { border-color: var(--green-soft); background: var(--green-deep); color: var(--warm-white); }
+  .day-chip.friday { border-color: #d4a83a; background: var(--amber-pale); }
+  .day-chip.friday:hover { background: var(--amber-light); }
+  .day-chip.friday.selected { background: var(--amber-dark); border-color: var(--amber-dark); color: var(--warm-white); }
+  .day-chip .day-name { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; opacity: 0.65; display: block; }
+  .day-chip .day-date { font-size: 14px; font-weight: 500; display: block; margin-top: 2px; }
+  .day-chip .day-note { font-size: 9px; opacity: 0.55; display: block; margin-top: 1px; }
+  .day-chip.selected .day-name, .day-chip.selected .day-note { opacity: 0.5; }
+  .days-legend { display: flex; gap: 16px; margin-bottom: 22px; margin-top: 10px; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-soft); }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+  .legend-dot.normal { background: var(--green-deep); }
+  .legend-dot.friday { background: var(--amber-dark); }
+
+  .pill-group { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+  .pill-option { border: 1.5px solid var(--border); border-radius: 100px; padding: 7px 16px; font-size: 13px; font-weight: 500; cursor: pointer; background: var(--cream); color: var(--text-mid); transition: all 0.15s; user-select: none; }
+  .pill-option:hover { border-color: var(--green-soft); background: var(--green-pale); color: var(--green-deep); }
+  .pill-option.selected { background: var(--green-deep); border-color: var(--green-deep); color: var(--warm-white); }
+  .card.friday-card .pill-option.selected { background: var(--amber-dark); border-color: var(--amber-dark); }
+
+  .tag-group { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }
+  .tag-option { border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 13px; cursor: pointer; background: var(--cream); color: var(--text-mid); transition: all 0.15s; user-select: none; }
+  .tag-option:hover { border-color: var(--green-soft); }
+  .tag-option.selected { background: var(--green-pale); border-color: var(--green-soft); color: var(--green-deep); font-weight: 500; }
+
+  .btn-submit { width: 100%; padding: 15px; background: var(--green-deep); color: var(--warm-white); border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .btn-submit:hover { background: var(--green-mid); transform: translateY(-1px); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .success-box { background: var(--green-pale); border: 1px solid var(--green-light); border-radius: var(--radius); padding: 48px 28px; text-align: center; display: none; }
+  .success-icon { font-size: 48px; margin-bottom: 14px; }
+  .success-box h3 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--green-deep); margin-bottom: 8px; }
+  .success-box p { color: var(--text-mid); font-size: 15px; line-height: 1.6; }
+
+  .overview-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .overview-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--green-deep); }
+  .overview-count { background: var(--green-deep); color: var(--warm-white); border-radius: 100px; padding: 5px 16px; font-size: 13px; font-weight: 500; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 24px; }
+  .stat-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; }
+  .stat-value { font-size: 30px; font-weight: 500; color: var(--green-deep); display: block; }
+  .stat-label { font-size: 12px; color: var(--text-soft); margin-top: 2px; line-height: 1.3; }
+
+  .day-columns { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 28px; }
+  .day-col { flex: 0 0 88px; background: var(--warm-white); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+  .day-col.is-friday { border-color: var(--amber-light); }
+  .day-col-header { background: var(--green-deep); color: var(--warm-white); padding: 9px 7px; text-align: center; }
+  .day-col.is-friday .day-col-header { background: var(--amber-dark); }
+  .col-day { font-size: 10px; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; }
+  .col-date { font-size: 14px; font-weight: 500; }
+  .day-col-body { padding: 7px 5px; min-height: 50px; }
+  .attendee-chip { display: block; background: var(--green-pale); border-radius: 5px; padding: 3px 6px; font-size: 11px; color: var(--green-deep); font-weight: 500; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .day-count { text-align: center; padding: 5px; font-size: 11px; color: var(--text-soft); border-top: 1px solid var(--border); }
+
+  .household-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; margin-bottom: 10px; }
+  .household-top { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 12px; }
+  .household-avatar { width: 44px; height: 44px; border-radius: 50%; background: var(--green-deep); color: var(--warm-white); font-family: 'Playfair Display', serif; font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .household-name { font-weight: 500; font-size: 16px; color: var(--text-dark); margin-bottom: 3px; }
+  .household-members { font-size: 13px; color: var(--text-soft); }
+  .household-days { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .day-badge { font-size: 12px; padding: 3px 10px; border-radius: 100px; background: var(--green-pale); color: var(--green-deep); font-weight: 500; border: 1px solid var(--green-light); }
+  .day-badge.friday { background: var(--amber-pale); color: var(--amber-dark); border-color: var(--amber-light); }
+  .detail-rows { border-top: 1px solid var(--border); padding-top: 10px; display: grid; gap: 6px; }
+  .detail-row { display: flex; gap: 8px; font-size: 13px; }
+  .detail-key { color: var(--text-soft); min-width: 170px; flex-shrink: 0; }
+  .detail-val { color: var(--text-dark); line-height: 1.4; }
+  .badge-vega { display: inline-block; background: var(--green-pale); color: var(--green-deep); border: 1px solid var(--green-light); border-radius: 100px; padding: 1px 9px; font-size: 11px; font-weight: 500; }
+  .badge-alert { display: inline-block; background: #fff3cd; color: #7a5500; border: 1px solid #ffc107; border-radius: 6px; padding: 2px 8px; font-size: 12px; }
+
+  .no-data { text-align: center; padding: 60px 20px; color: var(--text-soft); }
+  .no-data-icon { font-size: 44px; margin-bottom: 10px; }
+  .no-data p { font-size: 15px; line-height: 1.7; }
+
+  .loading-state { text-align: center; padding: 40px 20px; color: var(--text-soft); font-size: 15px; }
+
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .error-msg { background: #fff0f0; border: 1px solid #fcc; border-radius: 10px; padding: 12px 16px; color: #c00; font-size: 13px; margin-top: 10px; display: none; }
+
+  .config-banner { background: #fff3cd; border: 1px solid #ffc107; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #7a5500; display: none; }
+
+  @media (max-width: 500px) {
+    .card { padding: 18px 16px; }
+    .hero-content { padding: 20px 16px 32px; }
+    .container { padding: 24px 14px 60px; }
+    .detail-key { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <img class="hero-img" src="chalet.jpg" alt="Het chalet in de Ardennen">
+  <div class="hero-content">
+    <div class="hero-tag">La Famiglia Tharoul '26</div>
+    <h1>Wie is er wanneer?</h1>
+    <div class="hero-sub">Vul jullie aanwezigheid in zodat we alles goed kunnen plannen</div>
+    <div class="hero-dates">📅 vrijdag 17 – vrijdag 24 juli 2026</div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showPanel('form', this)">Mijn aanwezigheid</button>
+  <button class="tab" onclick="showPanel('overview', this)">Overzicht</button>
+</div>
+
+<div class="container">
+
+  <!-- CONFIG BANNER -->
+  <div class="config-banner" id="config-banner">
+    ⚠️ Supabase is nog niet geconfigureerd. Pas de variabelen <code>SUPABASE_URL</code> en <code>SUPABASE_ANON_KEY</code> bovenaan het script aan.
+  </div>
+
+  <!-- FORM PANEL -->
+  <div class="panel active" id="panel-form">
+    <div id="form-card-wrap">
+
+      <div class="card">
+        <div class="card-title">Jullie huishouden</div>
+        <div class="card-sub">Vul de naam van jullie groep in, voeg alle leden toe en geef aan hoeveel vegetariërs/vegans er bij jullie zijn.</div>
+
+        <label class="field-label">Naam van jullie huishouden</label>
+        <input type="text" id="household-name" placeholder="Bijv. Gezin De Vries of Team Oom Hans">
+
+        <div class="members-section">
+          <label class="field-label">Gezinsleden</label>
+          <div id="members-list">
+            <div class="member-row">
+              <input type="text" placeholder="Naam (bijv. Jan — volwassene)" class="member-input">
+              <button class="btn-remove" onclick="removeMember(this)">×</button>
+            </div>
+          </div>
+          <button class="btn-add-member" onclick="addMember()">+ Gezinslid toevoegen</button>
+        </div>
+
+        <label class="field-label">Hoeveel vegetariërs of vegans zijn jullie?</label>
+        <div class="stepper-row">
+          <button class="stepper-btn" onclick="stepVega(-1)">−</button>
+          <span class="stepper-value" id="vega-count">0</span>
+          <button class="stepper-btn" onclick="stepVega(1)">+</button>
+          <span class="stepper-label">personen<br><span style="font-size:11px">(0 = iedereen eet vlees)</span></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Aanwezigheid</div>
+        <div class="card-sub">Klik de dagen aan waarop jullie aanwezig zijn. De vrijdagen zijn goudkleurig — daar stellen we extra vragen over.</div>
+        <div class="days-label">Welke dagen zijn jullie aanwezig?</div>
+        <div class="days-grid" id="days-grid"></div>
+        <div class="days-legend">
+          <div class="legend-item"><div class="legend-dot normal"></div>gewone dag</div>
+          <div class="legend-item"><div class="legend-dot friday"></div>vrijdag (aankomst / vertrek)</div>
+        </div>
+      </div>
+
+      <div class="card friday-card" id="card-fri17" style="display:none">
+        <div class="card-title">📅 Vrijdag 17 juli — aankomst</div>
+        <div class="card-sub">Op de aankomstdag moeten we boodschappen halen en het avondeten verzorgen. Help ons plannen!</div>
+        <label class="field-label">Komen jullie voor of na etenstijd aan?</label>
+        <div class="pill-group" id="grp-arr17">
+          <div class="pill-option" data-group="grp-arr17" onclick="selectPill(this)">Vóór etenstijd</div>
+          <div class="pill-option" data-group="grp-arr17" onclick="selectPill(this)">Na etenstijd</div>
+          <div class="pill-option" data-group="grp-arr17" onclick="selectPill(this)">Weet ik nog niet</div>
+        </div>
+        <label class="field-label">Kunnen jullie helpen met boodschappen op vrijdag 17 juli?</label>
+        <div class="pill-group" id="grp-shop17">
+          <div class="pill-option" data-group="grp-shop17" onclick="selectPill(this)">Ja, graag!</div>
+          <div class="pill-option" data-group="grp-shop17" onclick="selectPill(this)">Eventueel</div>
+          <div class="pill-option" data-group="grp-shop17" onclick="selectPill(this)">Nee / we komen te laat aan</div>
+        </div>
+        <label class="field-label">Kunnen jullie helpen met koken op vrijdag 17 juli?</label>
+        <div class="pill-group" id="grp-cook17">
+          <div class="pill-option" data-group="grp-cook17" onclick="selectPill(this)">Ja, graag!</div>
+          <div class="pill-option" data-group="grp-cook17" onclick="selectPill(this)">Eventueel</div>
+          <div class="pill-option" data-group="grp-cook17" onclick="selectPill(this)">Nee / we komen te laat aan</div>
+        </div>
+      </div>
+
+      <div class="card friday-card" id="card-fri24" style="display:none">
+        <div class="card-title">📅 Vrijdag 24 juli — vertrek</div>
+        <div class="card-sub">Op de vertrekdag ontbijten we samen en ruimen we het chalet op (ca. 10:00–12:00, afhankelijk van de beschikbare handjes).</div>
+        <label class="field-label">Doen jullie mee met het gezamenlijk ontbijt op vrijdag 24 juli?</label>
+        <div class="pill-group" id="grp-breakfast24">
+          <div class="pill-option" data-group="grp-breakfast24" onclick="selectPill(this)">Ja, we zijn erbij</div>
+          <div class="pill-option" data-group="grp-breakfast24" onclick="selectPill(this)">Nee, we vertrekken vroeg</div>
+          <div class="pill-option" data-group="grp-breakfast24" onclick="selectPill(this)">Weet ik nog niet</div>
+        </div>
+        <label class="field-label">Kunnen jullie helpen met opruimen op vrijdag 24 juli (ca. 10:00–12:00)?</label>
+        <div class="pill-group" id="grp-cleanup24">
+          <div class="pill-option" data-group="grp-cleanup24" onclick="selectPill(this)">Ja, we helpen mee</div>
+          <div class="pill-option" data-group="grp-cleanup24" onclick="selectPill(this)">Gedeeltelijk</div>
+          <div class="pill-option" data-group="grp-cleanup24" onclick="selectPill(this)">Nee, we zijn al weg</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Bijzonderheden</div>
+        <div class="card-sub">Alles wat helpt bij de slaapkamerverdeling en de maaltijdplanning.</div>
+        <label class="field-label">Voedselallergieën of specifieke dieetwensen</label>
+        <textarea id="allergies" placeholder="Bijv. noten-allergie (Jan), lactose-intolerant (Sophie)... Laat leeg als er geen zijn."></textarea>
+        <label class="field-label">Voorkeur voor slaapkamer</label>
+        <textarea id="room-pref" placeholder="Bijv. begane grond i.v.m. knie, rustige kamer, bij de kinderen... Of laat leeg."></textarea>
+        <label class="field-label">Gedeeltelijk afwezig op een dag?</label>
+        <textarea id="partial-absence" placeholder="Bijv. Lisa is dinsdag 22 jul pas 's avonds terug vanwege werk. Of laat leeg."></textarea>
+        <label class="field-label">Overige bijzonderheden</label>
+        <textarea id="other-notes" placeholder="Medische aandachtspunten, bijzondere wensen, opmerkingen voor de organisatie..."></textarea>
+      </div>
+
+      <button class="btn-submit" id="submit-btn" onclick="submitForm()">
+        <span id="submit-label">Aanwezigheid opslaan</span>
+      </button>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <div class="success-box" id="success-box">
+      <div class="success-icon">🌿</div>
+      <h3>Gelukt, bedankt!</h3>
+      <p>Jullie aanwezigheid is opgeslagen.<br>Klik op <strong>Overzicht</strong> om te zien wie er wanneer zijn.</p>
+    </div>
+  </div>
+
+  <!-- OVERVIEW PANEL -->
+  <div class="panel" id="panel-overview">
+    <div class="overview-header">
+      <div class="overview-title">Overzicht</div>
+      <div class="overview-count" id="overview-count">0 huishoudens</div>
+    </div>
+    <div class="stats-row" id="stats-row" style="display:none">
+      <div class="stat-card"><span class="stat-value" id="stat-people">0</span><div class="stat-label">personen totaal</div></div>
+      <div class="stat-card"><span class="stat-value" id="stat-vega">0</span><div class="stat-label">vegetariërs / vegans</div></div>
+      <div class="stat-card"><span class="stat-value" id="stat-peak">0</span><div class="stat-label">max. aanwezig op één dag</div></div>
+    </div>
+    <div id="day-columns-container"></div>
+    <div id="household-list"></div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// CONFIGURATIE — vul dit in na aanmaken Supabase project
+// ============================================================
+const SUPABASE_URL = 'https://toghozxdhnedkqumetrb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvZ2hvenhkaG5lZGtxdW1ldHJiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1Njg1MzEsImV4cCI6MjA5MzE0NDUzMX0.bRb8GNQkWM-mxwbGVOd3T80sdqyJr9eaSzg25uiovek';
+// ============================================================
+
+const DAYS = [
+  { label: 'Vr', date: '17 jul', friday: true },
+  { label: 'Za', date: '18 jul', friday: false },
+  { label: 'Zo', date: '19 jul', friday: false },
+  { label: 'Ma', date: '20 jul', friday: false },
+  { label: 'Di', date: '21 jul', friday: false },
+  { label: 'Wo', date: '22 jul', friday: false },
+  { label: 'Do', date: '23 jul', friday: false },
+  { label: 'Vr', date: '24 jul', friday: true },
+];
+
+let supabase = null;
+let vegaCount = 0;
+
+function initSupabase() {
+  if (SUPABASE_URL === 'JOUW_SUPABASE_URL') {
+    document.getElementById('config-banner').style.display = 'block';
+    return false;
+  }
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return true;
+}
+
+// Bouw de dagenrij direct op — onafhankelijk van Supabase
+function buildDaysGrid() {
+  const grid = document.getElementById('days-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  DAYS.forEach((d, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip' + (d.friday ? ' friday' : '');
+    chip.dataset.index = i;
+    chip.innerHTML = `<span class="day-name">${d.label}</span><span class="day-date">${d.date}</span>${d.friday ? '<span class="day-note">vrijdag</span>' : ''}`;
+    chip.onclick = () => { chip.classList.toggle('selected'); updateFridayCards(); };
+    grid.appendChild(chip);
+  });
+}
+document.addEventListener('DOMContentLoaded', buildDaysGrid);
+
+function updateFridayCards() {
+  const sel = [...document.querySelectorAll('.day-chip.selected')].map(c => +c.dataset.index);
+  document.getElementById('card-fri17').style.display = sel.includes(0) ? 'block' : 'none';
+  document.getElementById('card-fri24').style.display = sel.includes(7) ? 'block' : 'none';
+}
+
+function stepVega(d) { vegaCount = Math.max(0, vegaCount + d); document.getElementById('vega-count').textContent = vegaCount; }
+
+function addMember() {
+  const list = document.getElementById('members-list');
+  const row = document.createElement('div');
+  row.className = 'member-row';
+  row.innerHTML = `<input type="text" placeholder="Naam (bijv. Lisa — kind)" class="member-input"><button class="btn-remove" onclick="removeMember(this)">×</button>`;
+  list.appendChild(row);
+  row.querySelector('input').focus();
+}
+
+function removeMember(btn) { if (document.querySelectorAll('.member-row').length > 1) btn.parentElement.remove(); }
+
+function selectPill(el) {
+  const g = el.dataset.group;
+  document.querySelectorAll(`.pill-option[data-group="${g}"]`).forEach(p => p.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function showPanel(name, tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (tab) tab.classList.add('active');
+  if (name === 'overview') loadOverview();
+}
+
+function getPill(groupId) {
+  const s = document.querySelector(`#${groupId} .selected`);
+  return s ? s.textContent.trim() : null;
+}
+
+async function submitForm() {
+  if (!supabase) { showError('Supabase is niet geconfigureerd. Zie de banner bovenaan.'); return; }
+  const household = document.getElementById('household-name').value.trim();
+  if (!household) { showError('Vul de naam van jullie huishouden in.'); return; }
+  const members = [...document.querySelectorAll('.member-input')].map(i => i.value.trim()).filter(Boolean);
+  const selectedDays = [...document.querySelectorAll('.day-chip.selected')].map(c => DAYS[+c.dataset.index].date);
+  if (selectedDays.length === 0) { showError('Selecteer minimaal één dag.'); return; }
+
+  const hasFri17 = selectedDays.includes('17 jul');
+  const hasFri24 = selectedDays.includes('24 jul');
+
+  const entry = {
+    household,
+    members,
+    days: selectedDays,
+    vega: vegaCount,
+    fri17: hasFri17 ? { arrival: getPill('grp-arr17'), shopping: getPill('grp-shop17'), cooking: getPill('grp-cook17') } : null,
+    fri24: hasFri24 ? { breakfast: getPill('grp-breakfast24'), cleanup: getPill('grp-cleanup24') } : null,
+    allergies: document.getElementById('allergies').value.trim(),
+    room_pref: document.getElementById('room-pref').value.trim(),
+    partial_absence: document.getElementById('partial-absence').value.trim(),
+    other_notes: document.getElementById('other-notes').value.trim(),
+  };
+
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-label').innerHTML = '<span class="spinner"></span>';
+  hideError();
+
+  const { error } = await supabase
+    .from('responses')
+    .upsert([entry], { onConflict: 'household' });
+
+  if (error) {
+    showError('Er ging iets mis: ' + error.message);
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('submit-label').textContent = 'Aanwezigheid opslaan';
+    return;
+  }
+
+  document.getElementById('form-card-wrap').style.display = 'none';
+  document.getElementById('success-box').style.display = 'block';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg; el.style.display = 'block';
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('submit-label').textContent = 'Aanwezigheid opslaan';
+}
+function hideError() { document.getElementById('error-msg').style.display = 'none'; }
+
+async function loadOverview() {
+  if (!supabase) {
+    document.getElementById('household-list').innerHTML = '<div class="no-data"><div class="no-data-icon">⚙️</div><p>Supabase is nog niet geconfigureerd.</p></div>';
+    return;
+  }
+
+  document.getElementById('household-list').innerHTML = '<div class="loading-state">Gegevens laden…</div>';
+
+  const { data: responses, error } = await supabase
+    .from('responses')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    document.getElementById('household-list').innerHTML = `<div class="no-data"><p>Fout bij laden: ${error.message}</p></div>`;
+    return;
+  }
+
+  document.getElementById('overview-count').textContent = responses.length + ' huishoud' + (responses.length === 1 ? '' : 'ens');
+
+  const statsRow = document.getElementById('stats-row');
+  if (responses.length > 0) {
+    statsRow.style.display = 'grid';
+    const totalPeople = responses.reduce((s, r) => s + Math.max((r.members || []).length, 1), 0);
+    const totalVega = responses.reduce((s, r) => s + (r.vega || 0), 0);
+    const peak = Math.max(...DAYS.map(d => responses.filter(r => (r.days || []).includes(d.date)).reduce((s, r) => s + Math.max((r.members || []).length, 1), 0)));
+    document.getElementById('stat-people').textContent = totalPeople;
+    document.getElementById('stat-vega').textContent = totalVega;
+    document.getElementById('stat-peak').textContent = peak;
+  } else { statsRow.style.display = 'none'; }
+
+  const colContainer = document.getElementById('day-columns-container');
+  colContainer.innerHTML = '';
+  if (responses.length > 0) {
+    const cols = document.createElement('div');
+    cols.className = 'day-columns';
+    DAYS.forEach(d => {
+      const present = responses.filter(r => (r.days || []).includes(d.date));
+      const col = document.createElement('div');
+      col.className = 'day-col' + (d.friday ? ' is-friday' : '');
+      col.innerHTML = `
+        <div class="day-col-header"><div class="col-day">${d.label}</div><div class="col-date">${d.date}</div></div>
+        <div class="day-col-body">${present.map(r => `<span class="attendee-chip">${r.household}</span>`).join('')}</div>
+        <div class="day-count">${present.reduce((s, r) => s + Math.max((r.members || []).length, 1), 0)} pers.</div>
+      `;
+      cols.appendChild(col);
+    });
+    colContainer.appendChild(cols);
+  }
+
+  const list = document.getElementById('household-list');
+  list.innerHTML = '';
+  if (responses.length === 0) {
+    list.innerHTML = `<div class="no-data"><div class="no-data-icon">🌲</div><p>Nog niemand heeft zich aangemeld.<br>Stuur de link naar alle huishoudens!</p></div>`;
+    return;
+  }
+
+  responses.forEach(r => {
+    const initials = r.household.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    const dayBadges = (r.days || []).map(d => {
+      const obj = DAYS.find(x => x.date === d);
+      return `<span class="day-badge${obj && obj.friday ? ' friday' : ''}">${d}</span>`;
+    }).join('');
+
+    let details = '';
+    if (r.vega > 0) details += drow('Vegetariërs/vegans', `<span class="badge-vega">${r.vega} persoon${r.vega > 1 ? 'en' : ''}</span>`);
+    if (r.fri17) {
+      if (r.fri17.arrival) details += drow('Aankomst vr 17 jul', r.fri17.arrival);
+      if (r.fri17.shopping) details += drow('Boodschappen vr 17 jul', r.fri17.shopping);
+      if (r.fri17.cooking) details += drow('Koken vr 17 jul', r.fri17.cooking);
+    }
+    if (r.fri24) {
+      if (r.fri24.breakfast) details += drow('Ontbijt vr 24 jul', r.fri24.breakfast);
+      if (r.fri24.cleanup) details += drow('Opruimen vr 24 jul', r.fri24.cleanup);
+    }
+    if (r.allergies) details += drow('Allergieën / dieet', `<span class="badge-alert">${r.allergies}</span>`);
+    if (r.room_pref) details += drow('Slaapkamervoorkeur', r.room_pref);
+    if (r.partial_absence) details += drow('Gedeeltelijk afwezig', r.partial_absence);
+    if (r.other_notes) details += drow('Overig', r.other_notes);
+
+    const card = document.createElement('div');
+    card.className = 'household-card';
+    card.innerHTML = `
+      <div class="household-top">
+        <div class="household-avatar">${initials}</div>
+        <div>
+          <div class="household-name">${r.household}</div>
+          <div class="household-members">${(r.members || []).length > 0 ? r.members.join(', ') : 'Geen leden opgegeven'}</div>
+        </div>
+      </div>
+      <div class="household-days">${dayBadges}</div>
+      ${details ? `<div class="detail-rows">${details}</div>` : ''}
+    `;
+    list.appendChild(card);
+  });
+}
+
+function drow(key, val) {
+  return `<div class="detail-row"><span class="detail-key">${key}</span><span class="detail-val">${val}</span></div>`;
+}
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onload="initSupabase()" onerror="console.warn('Supabase kon niet laden')"></script>
+</body>
+</html>
