@@ -169,6 +169,8 @@
     .detail-key { min-width: 120px; }
   }
 </style>
+
+<script src="index_files/supabase-js@2"></script>
 </head>
 <body>
 
@@ -567,8 +569,11 @@ function drow(key, val) {
   return `<div class="detail-row"><span class="detail-key">${key}</span><span class="detail-val">${val}</span></div>`;
 }
 
+// Probeer initSupabase zodra alles geladen is als onload nog niet werkte
+window.addEventListener('load', function() {
+  if (!supabase && window.supabase) initSupabase();
+});
 </script>
-<script src="index_files/supabase-js@2" onload="initSupabase()" onerror="console.warn('Supabase kon niet laden')"></script>
 
 
 </body></html>
