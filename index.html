@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="nl"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<html lang="nl">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Famiglia Tharoul '26 — Aanwezigheid</title>
-<link href="index_files/css2.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
   :root {
@@ -170,12 +170,12 @@
   }
 </style>
 
-<script src="index_files/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <div class="hero">
-  <img class="hero-img" src="index_files/chalet.jpg" alt="Het chalet in de Ardennen">
+  <img class="hero-img" src="chalet.jpg" alt="Het chalet in de Ardennen">
   <div class="hero-content">
     <div class="hero-tag">La Famiglia Tharoul '26</div>
     <h1>Wie is er wanneer?</h1>
@@ -365,16 +365,34 @@ const DAYS = [
   { label: 'Vr', date: '24 jul', friday: true },
 ];
 
-let supabase = null;
+let sb = null;
 let vegaCount = 0;
 
 function initSupabase() {
+  if (sb) return true; // already initialized
   if (SUPABASE_URL === 'JOUW_SUPABASE_URL') {
     document.getElementById('config-banner').style.display = 'block';
     return false;
   }
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  return true;
+  if (!window.supabase || !window.supabase.createClient) {
+    console.warn('Supabase library not loaded yet, will retry...');
+    return false;
+  }
+  try {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('Supabase initialized successfully');
+    return true;
+  } catch(e) {
+    console.error('Supabase init error:', e);
+    return false;
+  }
+}
+
+// Try to init immediately, then again on DOMContentLoaded, then on window load
+if (typeof window !== 'undefined') {
+  if (window.supabase) initSupabase();
+  document.addEventListener('DOMContentLoaded', function() { if (!sb) initSupabase(); });
+  window.addEventListener('load', function() { if (!sb) initSupabase(); });
 }
 
 
@@ -418,7 +436,10 @@ function getPill(groupId) {
 }
 
 async function submitForm() {
-  if (!supabase) { showError('Supabase is niet geconfigureerd. Zie de banner bovenaan.'); return; }
+  if (!sb) {
+    initSupabase(); // try once more
+    if (!sb) { showError('Verbinding met database mislukt. Probeer de pagina te verversen (Ctrl+F5).'); return; }
+  }
   const household = document.getElementById('household-name').value.trim();
   if (!household) { showError('Vul de naam van jullie huishouden in.'); return; }
   const members = [...document.querySelectorAll('.member-input')].map(i => i.value.trim()).filter(Boolean);
@@ -445,7 +466,7 @@ async function submitForm() {
   document.getElementById('submit-label').innerHTML = '<span class="spinner"></span>';
   hideError();
 
-  const { error } = await supabase
+  const { error } = await sb
     .from('responses')
     .upsert([entry], { onConflict: 'household' });
 
@@ -469,14 +490,15 @@ function showError(msg) {
 function hideError() { document.getElementById('error-msg').style.display = 'none'; }
 
 async function loadOverview() {
-  if (!supabase) {
-    document.getElementById('household-list').innerHTML = '<div class="no-data"><div class="no-data-icon">⚙️</div><p>Supabase is nog niet geconfigureerd.</p></div>';
+  if (!sb) initSupabase();
+  if (!sb) {
+    document.getElementById('household-list').innerHTML = '<div class="no-data"><div class="no-data-icon">⚙️</div><p>Verbinding met database mislukt.<br>Probeer de pagina te verversen (Ctrl+F5).</p></div>';
     return;
   }
 
   document.getElementById('household-list').innerHTML = '<div class="loading-state">Gegevens laden…</div>';
 
-  const { data: responses, error } = await supabase
+  const { data: responses, error } = await sb
     .from('responses')
     .select('*')
     .order('created_at', { ascending: true });
@@ -569,11 +591,7 @@ function drow(key, val) {
   return `<div class="detail-row"><span class="detail-key">${key}</span><span class="detail-val">${val}</span></div>`;
 }
 
-// Probeer initSupabase zodra alles geladen is als onload nog niet werkte
-window.addEventListener('load', function() {
-  if (!supabase && window.supabase) initSupabase();
-});
+
 </script>
-
-
-</body></html>
+</body>
+</html>
