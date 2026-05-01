@@ -65,9 +65,18 @@
   input[type="text"]::placeholder, textarea::placeholder { color: var(--text-soft); }
 
   .members-section { margin-bottom: 22px; }
-  .member-row { display: flex; gap: 8px; align-items: center; margin-bottom: 7px; }
-  .member-row input { margin-bottom: 0; flex: 1; }
-  .btn-remove { width: 34px; height: 34px; border: 1.5px solid var(--border); border-radius: 8px; background: none; cursor: pointer; color: var(--text-soft); font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
+  .member-block { background: var(--cream); border: 1.5px solid var(--border); border-radius: 12px; padding: 12px 12px 14px; margin-bottom: 10px; }
+  .member-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .member-row input { margin-bottom: 0; flex: 1; background: var(--warm-white); }
+  .member-options { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+  .type-toggle, .room-toggle { display: inline-flex; background: var(--warm-white); border: 1.5px solid var(--border); border-radius: 100px; padding: 3px; }
+  .type-btn, .room-btn { border: none; background: none; padding: 5px 14px; font-size: 12px; font-weight: 500; color: var(--text-soft); cursor: pointer; border-radius: 100px; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
+  .type-btn.active, .room-btn.active { background: var(--green-deep); color: var(--warm-white); }
+  .child-room { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .opt-label { font-size: 12px; color: var(--text-mid); }
+  .label-hint { font-weight: 400; color: var(--text-soft); font-size: 12px; }
+
+  .btn-remove { width: 34px; height: 34px; border: 1.5px solid var(--border); border-radius: 8px; background: var(--warm-white); cursor: pointer; color: var(--text-soft); font-size: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; }
   .btn-remove:hover { border-color: #e25; color: #e25; background: #fff0f0; }
   .btn-add-member { font-size: 13px; color: var(--green-soft); background: none; border: 1.5px dashed var(--green-light); border-radius: 8px; padding: 8px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; transition: all 0.15s; width: 100%; margin-bottom: 20px; }
   .btn-add-member:hover { background: var(--green-pale); border-style: solid; }
@@ -205,14 +214,29 @@
         <div class="card-sub">Vul de naam van jullie groep in, voeg alle leden toe en geef aan hoeveel vegetariërs/vegans er bij jullie zijn.</div>
 
         <label class="field-label">Naam van jullie huishouden</label>
-        <input type="text" id="household-name" placeholder="Bijv. Gezin De Vries of Team Oom Hans">
+        <input type="text" id="household-name">
 
         <div class="members-section">
           <label class="field-label">Gezinsleden</label>
           <div id="members-list">
-            <div class="member-row">
-              <input type="text" placeholder="Naam (bijv. Jan — volwassene)" class="member-input">
-              <button class="btn-remove" onclick="removeMember(this)">×</button>
+            <div class="member-block">
+              <div class="member-row">
+                <input type="text" class="member-input">
+                <button class="btn-remove" onclick="removeMember(this)">×</button>
+              </div>
+              <div class="member-options">
+                <div class="type-toggle">
+                  <button type="button" class="type-btn active" data-type="adult" onclick="selectType(this)">Volwassene</button>
+                  <button type="button" class="type-btn" data-type="child" onclick="selectType(this)">Kind</button>
+                </div>
+                <div class="child-room" style="display:none">
+                  <span class="opt-label">Slapen in de grote kinderkamer?</span>
+                  <div class="room-toggle">
+                    <button type="button" class="room-btn" data-value="ja" onclick="selectRoom(this)">Ja</button>
+                    <button type="button" class="room-btn" data-value="nee" onclick="selectRoom(this)">Nee</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <button class="btn-add-member" onclick="addMember()">+ Gezinslid toevoegen</button>
@@ -307,13 +331,30 @@
         <div class="card-title">Bijzonderheden</div>
         <div class="card-sub">Alles wat helpt bij de slaapkamerverdeling en de maaltijdplanning.</div>
         <label class="field-label">Voedselallergieën of specifieke dieetwensen</label>
-        <textarea id="allergies" placeholder="Bijv. noten-allergie (Jan), lactose-intolerant (Sophie)... Laat leeg als er geen zijn."></textarea>
-        <label class="field-label">Voorkeur voor slaapkamer</label>
-        <textarea id="room-pref" placeholder="Bijv. begane grond i.v.m. knie, rustige kamer, bij de kinderen... Of laat leeg."></textarea>
-        <label class="field-label">Gedeeltelijk afwezig op een dag?</label>
-        <textarea id="partial-absence" placeholder="Bijv. Lisa is dinsdag 22 jul pas 's avonds terug vanwege werk. Of laat leeg."></textarea>
-        <label class="field-label">Overige bijzonderheden</label>
-        <textarea id="other-notes" placeholder="Medische aandachtspunten, bijzondere wensen, opmerkingen voor de organisatie..."></textarea>
+        <textarea id="allergies"></textarea>
+        <label class="field-label">Is iemand uit het huishouden één of meerdere dagen (gedeeltelijk) afwezig?</label>
+        <textarea id="partial-absence"></textarea>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Activiteiten &amp; avondprogramma</div>
+        <div class="card-sub">Laat weten waar jullie zin in hebben — dan kunnen we samen iets organiseren.</div>
+
+        <label class="field-label">Ik heb interesse om gezamenlijk te <span class="label-hint">(meerdere antwoorden mogelijk)</span></label>
+        <div class="tag-group" id="activities-group">
+          <div class="tag-option" data-value="Mountainbiken" onclick="toggleTag(this)">Mountainbiken</div>
+          <div class="tag-option" data-value="Kanoën" onclick="toggleTag(this)">Kanoën</div>
+          <div class="tag-option" data-value="Zwemmen" onclick="toggleTag(this)">Zwemmen</div>
+        </div>
+
+        <label class="field-label">Iets anders, nl… <span class="label-hint">(optioneel)</span></label>
+        <input type="text" id="activity-other">
+
+        <label class="field-label">Ik zou met de groep op uitje willen naar… <span class="label-hint">(optioneel)</span></label>
+        <input type="text" id="activity-outing">
+
+        <label class="field-label">Voor het avondprogramma heb ik stiekem altijd al een … willen organiseren <span class="label-hint">(optioneel)</span></label>
+        <input type="text" id="evening-idea">
       </div>
 
       <button class="btn-submit" id="submit-btn" onclick="submitForm()">
@@ -407,14 +448,58 @@ function stepVega(d) { vegaCount = Math.max(0, vegaCount + d); document.getEleme
 
 function addMember() {
   const list = document.getElementById('members-list');
-  const row = document.createElement('div');
-  row.className = 'member-row';
-  row.innerHTML = `<input type="text" placeholder="Naam (bijv. Lisa — kind)" class="member-input"><button class="btn-remove" onclick="removeMember(this)">×</button>`;
-  list.appendChild(row);
-  row.querySelector('input').focus();
+  const block = document.createElement('div');
+  block.className = 'member-block';
+  block.innerHTML = `
+    <div class="member-row">
+      <input type="text" class="member-input">
+      <button class="btn-remove" onclick="removeMember(this)">×</button>
+    </div>
+    <div class="member-options">
+      <div class="type-toggle">
+        <button type="button" class="type-btn active" data-type="adult" onclick="selectType(this)">Volwassene</button>
+        <button type="button" class="type-btn" data-type="child" onclick="selectType(this)">Kind</button>
+      </div>
+      <div class="child-room" style="display:none">
+        <span class="opt-label">Slapen in de grote kinderkamer?</span>
+        <div class="room-toggle">
+          <button type="button" class="room-btn" data-value="ja" onclick="selectRoom(this)">Ja</button>
+          <button type="button" class="room-btn" data-value="nee" onclick="selectRoom(this)">Nee</button>
+        </div>
+      </div>
+    </div>`;
+  list.appendChild(block);
+  block.querySelector('input').focus();
 }
 
-function removeMember(btn) { if (document.querySelectorAll('.member-row').length > 1) btn.parentElement.remove(); }
+function removeMember(btn) {
+  if (document.querySelectorAll('.member-block').length > 1) {
+    btn.closest('.member-block').remove();
+  }
+}
+
+function selectType(btn) {
+  const block = btn.closest('.member-block');
+  block.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const childRoom = block.querySelector('.child-room');
+  if (btn.dataset.type === 'child') {
+    childRoom.style.display = 'flex';
+  } else {
+    childRoom.style.display = 'none';
+    childRoom.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+  }
+}
+
+function selectRoom(btn) {
+  const toggle = btn.closest('.room-toggle');
+  toggle.querySelectorAll('.room-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function toggleTag(el) {
+  el.classList.toggle('selected');
+}
 
 function selectPill(el) {
   const g = el.dataset.group;
@@ -442,12 +527,27 @@ async function submitForm() {
   }
   const household = document.getElementById('household-name').value.trim();
   if (!household) { showError('Vul de naam van jullie huishouden in.'); return; }
-  const members = [...document.querySelectorAll('.member-input')].map(i => i.value.trim()).filter(Boolean);
+
+  const members = [...document.querySelectorAll('.member-block')].map(block => {
+    const name = block.querySelector('.member-input').value.trim();
+    if (!name) return null;
+    const typeBtn = block.querySelector('.type-btn.active');
+    const type = typeBtn ? typeBtn.dataset.type : 'adult';
+    const obj = { name, type };
+    if (type === 'child') {
+      const roomBtn = block.querySelector('.room-btn.active');
+      obj.big_room = roomBtn ? roomBtn.dataset.value : null;
+    }
+    return obj;
+  }).filter(Boolean);
+
   const selectedDays = [...document.querySelectorAll('.day-chip.selected')].map(c => DAYS[+c.dataset.index].date);
   if (selectedDays.length === 0) { showError('Selecteer minimaal één dag.'); return; }
 
   const hasFri17 = selectedDays.includes('17 jul');
   const hasFri24 = selectedDays.includes('24 jul');
+
+  const activities = [...document.querySelectorAll('#activities-group .tag-option.selected')].map(t => t.dataset.value);
 
   const entry = {
     household,
@@ -457,9 +557,11 @@ async function submitForm() {
     fri17: hasFri17 ? { arrival: getPill('grp-arr17'), shopping: getPill('grp-shop17'), cooking: getPill('grp-cook17') } : null,
     fri24: hasFri24 ? { breakfast: getPill('grp-breakfast24'), cleanup: getPill('grp-cleanup24') } : null,
     allergies: document.getElementById('allergies').value.trim(),
-    room_pref: document.getElementById('room-pref').value.trim(),
     partial_absence: document.getElementById('partial-absence').value.trim(),
-    other_notes: document.getElementById('other-notes').value.trim(),
+    activities,
+    activity_other: document.getElementById('activity-other').value.trim(),
+    activity_outing: document.getElementById('activity-outing').value.trim(),
+    evening_idea: document.getElementById('evening-idea').value.trim(),
   };
 
   document.getElementById('submit-btn').disabled = true;
@@ -520,7 +622,6 @@ async function loadOverview() {
     document.getElementById('stat-vega').textContent = totalVega;
     document.getElementById('stat-peak').textContent = peak;
   } else { statsRow.style.display = 'none'; }
-
   const colContainer = document.getElementById('day-columns-container');
   colContainer.innerHTML = '';
   if (responses.length > 0) {
@@ -556,6 +657,11 @@ async function loadOverview() {
 
     let details = '';
     if (r.vega > 0) details += drow('Vegetariërs/vegans', `<span class="badge-vega">${r.vega} persoon${r.vega > 1 ? 'en' : ''}</span>`);
+    const kids = (r.members || []).filter(m => m && typeof m === 'object' && m.type === 'child');
+    if (kids.length > 0) {
+      const kidList = kids.map(k => `${k.name}${k.big_room === 'ja' ? ' (grote kinderkamer)' : k.big_room === 'nee' ? ' (eigen kamer)' : ''}`).join(', ');
+      details += drow('Kinderen', kidList);
+    }
     if (r.fri17) {
       if (r.fri17.arrival) details += drow('Aankomst vr 17 jul', r.fri17.arrival);
       if (r.fri17.shopping) details += drow('Boodschappen vr 17 jul', r.fri17.shopping);
@@ -566,9 +672,17 @@ async function loadOverview() {
       if (r.fri24.cleanup) details += drow('Opruimen vr 24 jul', r.fri24.cleanup);
     }
     if (r.allergies) details += drow('Allergieën / dieet', `<span class="badge-alert">${r.allergies}</span>`);
-    if (r.room_pref) details += drow('Slaapkamervoorkeur', r.room_pref);
     if (r.partial_absence) details += drow('Gedeeltelijk afwezig', r.partial_absence);
-    if (r.other_notes) details += drow('Overig', r.other_notes);
+    if (r.activities && r.activities.length > 0) details += drow('Interesse activiteiten', r.activities.join(', '));
+    if (r.activity_other) details += drow('Iets anders', r.activity_other);
+    if (r.activity_outing) details += drow('Uitje naar', r.activity_outing);
+    if (r.evening_idea) details += drow('Avondprogramma-idee', r.evening_idea);
+
+    const memberNames = (r.members || []).map(m => {
+      if (typeof m === 'string') return m;
+      if (m && typeof m === 'object') return m.type === 'child' ? `${m.name} (kind)` : m.name;
+      return '';
+    }).filter(Boolean);
 
     const card = document.createElement('div');
     card.className = 'household-card';
@@ -577,7 +691,7 @@ async function loadOverview() {
         <div class="household-avatar">${initials}</div>
         <div>
           <div class="household-name">${r.household}</div>
-          <div class="household-members">${(r.members || []).length > 0 ? r.members.join(', ') : 'Geen leden opgegeven'}</div>
+          <div class="household-members">${memberNames.length > 0 ? memberNames.join(', ') : 'Geen leden opgegeven'}</div>
         </div>
       </div>
       <div class="household-days">${dayBadges}</div>
