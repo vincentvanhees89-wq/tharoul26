@@ -614,6 +614,19 @@ async function loadOverview() {
   document.getElementById('overview-count').textContent = responses.length + ' huishoud' + (responses.length === 1 ? '' : 'ens');
 
   const statsRow = document.getElementById('stats-row');
+  // Hulpfunctie: members kunnen als object of als JSON-string terugkomen uit Supabase
+  function parseMember(m) {
+    if (m && typeof m === 'object') return m;
+    if (typeof m === 'string') {
+      const trimmed = m.trim();
+      if (trimmed.startsWith('{')) {
+        try { return JSON.parse(trimmed); } catch(e) { return { name: m, type: 'adult' }; }
+      }
+      return { name: m, type: 'adult' };
+    }
+    return null;
+  }
+
   if (responses.length > 0) {
     statsRow.style.display = 'grid';
     const totalPeople = responses.reduce((s, r) => s + Math.max((r.members || []).length, 1), 0);
@@ -658,7 +671,8 @@ async function loadOverview() {
 
     let details = '';
     if (r.vega > 0) details += drow('Vegetariërs/vegans', `<span class="badge-vega">${r.vega} persoon${r.vega > 1 ? 'en' : ''}</span>`);
-    const kids = (r.members || []).filter(m => m && typeof m === 'object' && m.type === 'child');
+    const parsedMembers = (r.members || []).map(parseMember).filter(Boolean);
+    const kids = parsedMembers.filter(m => m.type === 'child');
     if (kids.length > 0) {
       const kidList = kids.map(k => `${k.name}${k.big_room === 'ja' ? ' (grote kinderkamer)' : k.big_room === 'nee' ? ' (eigen kamer)' : ''}`).join(', ');
       details += drow('Kinderen', kidList);
@@ -679,11 +693,7 @@ async function loadOverview() {
     if (r.activity_outing) details += drow('Uitje naar', r.activity_outing);
     if (r.evening_idea) details += drow('Avondprogramma-idee', r.evening_idea);
 
-    const memberNames = (r.members || []).map(m => {
-      if (typeof m === 'string') return m;
-      if (m && typeof m === 'object') return m.type === 'child' ? `${m.name} (kind)` : m.name;
-      return '';
-    }).filter(Boolean);
+    const memberNames = parsedMembers.map(m => m.type === 'child' ? `${m.name} (kind)` : m.name).filter(Boolean);
 
     const card = document.createElement('div');
     card.className = 'household-card';
